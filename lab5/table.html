@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Table</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+</head>
+
+<body class="bg-gray-100 p-10">
+
+<div class="max-w-6xl mx-auto bg-white shadow rounded-lg overflow-hidden">
+
+    <div class="flex justify-between items-center p-4 border-b bg-white">
+        <div class="flex items-center gap-2 text-gray-400">
+            <input type="checkbox" class="rounded border-gray-300">
+            <i class="fa-solid fa-chevron-down text-[10px] cursor-pointer"></i>
+        </div>
+
+        <div class="flex gap-6 text-sm text-gray-600">
+            <button class="flex items-center gap-2 hover:text-blue-600 transition">
+                <i class="fa-solid fa-display text-gray-400"></i> Display
+            </button>
+            <button class="flex items-center gap-2 hover:text-blue-600 transition">
+                <i class="fa-solid fa-arrow-down-wide-short text-gray-400"></i> Sort by
+            </button>
+            <button class="flex items-center gap-2 hover:text-blue-600 transition">
+                <i class="fa-solid fa-ellipsis-vertical text-gray-400"></i> Actions
+            </button>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+
+            <thead class="text-gray-500 border-b bg-gray-50">
+            <tr>
+                <th class="p-4 w-10"></th>
+                <th class="p-4">Address</th>
+                <th class="p-4">Skip-Traced?</th>
+                <th class="p-4">Deal Type</th>
+                <th class="p-4">Est Price/SqFt</th>
+                <th class="p-4">Motivation(s)</th>
+                <th class="p-4">Property Status</th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <tr class="border-b hover:bg-gray-100 transition">
+                <td class="p-4">
+                    <input type="checkbox">
+                </td>
+
+                <td class="p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="font-semibold underline">5418 W WASHINGTON BLVD</div>
+                            <div class="text-gray-500 text-xs">LOS ANGELES, CA, 90016</div>
+                        </div>
+                        <i class="fa-regular fa-image text-gray-400 ml-4"></i>
+                    </div>
+                </td>
+
+                <td class="p-4">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                </td>
+
+                <td class="p-4">0</td>
+                <td class="p-4"></td>
+                <td class="p-4">8</td>
+                <td class="p-4 text-gray-600">Off Market (Motivated)</td>
+            </tr>
+
+            <tr class="border-b hover:bg-gray-100 transition">
+                <td class="p-4">
+                    <input type="checkbox">
+                </td>
+
+                <td class="p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="font-semibold underline">4221 ABNER ST</div>
+                            <div class="text-gray-500 text-xs">LOS ANGELES, CA, 90032</div>
+                        </div>
+                        <i class="fa-regular fa-image text-gray-400 ml-4"></i>
+                    </div>
+                </td>
+
+                <td class="p-4">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                </td>
+
+                <td class="p-4">0</td>
+                <td class="p-4">$439</td>
+                <td class="p-4">10</td>
+                <td class="p-4 text-gray-600">Off Market (Motivated)</td>
+            </tr>
+
+            <tr class="border-b hover:bg-gray-100 transition">
+                <td class="p-4">
+                    <input type="checkbox">
+                </td>
+
+                <td class="p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="font-semibold underline">121 S HOPE ST APT 506</div>
+                            <div class="text-gray-500 text-xs">LOS ANGELES, CA, 90012</div>
+                        </div>
+                        <i class="fa-regular fa-image text-gray-400 ml-4"></i>
+                    </div>
+                </td>
+
+                <td class="p-4">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                </td>
+
+                <td class="p-4">0</td>
+                <td class="p-4">$562</td>
+                <td class="p-4">10</td>
+                <td class="p-4 text-gray-600">Off Market (Motivated)</td>
+            </tr>
+
+            <tr class="border-b hover:bg-gray-100 transition">
+                <td class="p-4">
+                    <input type="checkbox">
+                </td>
+
+                <td class="p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="font-semibold underline">3132 E PICO BLVD</div>
+                            <div class="text-gray-500 text-xs">LOS ANGELES, CA, 90023</div>
+                        </div>
+                        <i class="fa-regular fa-image text-gray-400 ml-4"></i>
+                    </div>
+                </td>
+
+                <td class="p-4">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                </td>
+
+                <td class="p-4">0</td>
+                <td class="p-4"></td>
+                <td class="p-4">5</td>
+                <td class="p-4 text-gray-600">Off Market (Motivated)</td>
+            </tr>
+
+            <tr class="hover:bg-gray-100 transition">
+                <td class="p-4">
+                    <input type="checkbox">
+                </td>
+
+                <td class="p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="font-semibold underline">777 E PICO BLDV</div>
+                            <div class="text-gray-500 text-xs">LOS ANGELES, CA, 90021</div>
+                        </div>
+                        <i class="fa-regular fa-image text-gray-400 ml-4"></i>
+                    </div>
+                </td>
+
+                <td class="p-4">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400"></i>
+                </td>
+
+                <td class="p-4">0</td>
+                <td class="p-4"></td>
+                <td class="p-4">6</td>
+                <td class="p-4 text-gray-600">Off Market(Motivated)</td>
+            </tr>
+
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+</body>
+</html>
+
