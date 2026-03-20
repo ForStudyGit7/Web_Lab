@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+        body { font-family: sans-serif; padding: 20px; }
+        section { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+
+        #elid {
+            width: 60px;
+            height: 60px;
+            background-color: coral;
+            margin: 20px 0;
+            transition: transform 0.4s ease;
+        }
+        form input { display: block; margin: 10px 0; }
+    </style>
+</head>
+<body>
+
+<section>
+    <input type="text" id="countyInput" placeholder="Введіть назву округу">
+    <button onclick="findCounty()">Знайти код</button>
+    <div id="result"></div>
+</section>
+
+<section>
+    <form id="validForm">
+        <input type="text" id="first_name" placeholder="Ім'я">
+        <input type="text" id="last_name" placeholder="Прізвище">
+        <input type="email" id="email" placeholder="Email">
+        <button type="submit">Надіслати</button>
+    </form>
+</section>
+
+<section>
+    <div id="elid"></div>
+    <button onclick="move(-100)">Вліво</button>
+    <button onclick="move(100)">Вправо</button>
+</section>
+
+<script>
+    // Завдання 2
+    var name = "Василь";
+    var admin = name;
+    console.log("Admin name:", admin);
+
+    // Завдання 3
+    async function findCounty() {
+        const res = await fetch("https://api.census.gov/data/2020/acs/acs5/profile?get=NAME&for=county:*");
+        const data = await res.json();
+
+
+        const list = data.slice(1).map(row => ({
+            fullName: row[0],
+            fullCode: row[1] + row[2]
+        }));
+
+        const input = document.getElementById('countyInput').value;
+        const found = list.find(item => item.fullName === input);
+        document.getElementById('result').innerText = found ? found.fullCode : "Не знайдено";
+    }
+
+    // Завдання 4
+    document.getElementById('validForm').addEventListener('submit', function(e) {
+        const fn = document.getElementById('first_name').value;
+        const ln = document.getElementById('last_name').value;
+        const em = document.getElementById('email').value;
+
+        if (!fn || !ln || !em) {
+            e.preventDefault();
+            alert("Заповніть усі поля!");
+        } else {
+            alert(`Ім'я: ${fn}, Прізвище: ${ln}, Email: ${em}`);
+        }
+    });
+
+    // Завдання 5
+    let currentPos = 0;
+    function move(step) {
+        currentPos += step;
+        document.getElementById('elid').style.transform = `translateX(${currentPos}px)`;
+    }
+</script>
+
+</body>
+</html>
