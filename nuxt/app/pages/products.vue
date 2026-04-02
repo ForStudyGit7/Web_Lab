@@ -1,11 +1,11 @@
 <script setup>
 definePageMeta({
-  title: 'Список продуктів'
+  title: 'Таблиця'
 })
 </script>
 
 <template>
   <div class="py-12">
-    <PricingPlans />
+    <ProductTable />
   </div>
 </template>

@@ -1,27 +1,13 @@
 <script setup>
 useHead({
-  meta: [
-    { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+  // Цей шаблон автоматично додаватиме назву сторінки до вкладки браузера
+  titleTemplate: (titleChunk) => {
+    return titleChunk ? `${titleChunk}` : 'Список продуктів'
+  },
+  script: [
+    { src: 'https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js' }
   ],
-  link: [
-    { rel: 'icon', href: '/favicon.ico' }
-  ],
-  htmlAttrs: {
-    lang: 'en'
-  }
-})
-
-const title = 'Nuxt Starter Template'
-const description = 'A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours.'
-
-useSeoMeta({
-  title,
-  description,
-  ogTitle: title,
-  ogDescription: description,
-  ogImage: 'https://ui.nuxt.com/assets/templates/nuxt/starter-light.png',
-  twitterImage: 'https://ui.nuxt.com/assets/templates/nuxt/starter-light.png',
-  twitterCard: 'summary_large_image'
+  htmlAttrs: { lang: 'uk' }
 })
 </script>
 
@@ -29,21 +15,22 @@ useSeoMeta({
   <UApp>
     <UHeader>
       <template #left>
-        <NuxtLink to="/">
+        <NuxtLink to="/" class="flex items-center gap-2">
           <AppLogo class="w-auto h-6 shrink-0" />
         </NuxtLink>
 
-        <TemplateMenu />
+        <div class="hidden lg:flex items-center gap-4 ml-8">
+          <UButton to="/" variant="ghost" color="neutral">Список продуктів</UButton>
+          <UButton to="/products" variant="ghost" color="neutral">Таблиця</UButton>
+        </div>
       </template>
 
       <template #right>
         <UColorModeButton />
-
         <UButton
-          to="https://github.com/nuxt-ui-templates/starter"
+          to="https://github.com/"
           target="_blank"
           icon="i-simple-icons-github"
-          aria-label="GitHub"
           color="neutral"
           variant="ghost"
         />
@@ -59,19 +46,8 @@ useSeoMeta({
     <UFooter>
       <template #left>
         <p class="text-sm text-muted">
-          Built with Nuxt UI • © {{ new Date().getFullYear() }}
+          Побудовано на Nuxt UI • © {{ new Date().getFullYear() }}
         </p>
-      </template>
-
-      <template #right>
-        <UButton
-          to="https://github.com/nuxt-ui-templates/starter"
-          target="_blank"
-          icon="i-simple-icons-github"
-          aria-label="GitHub"
-          color="neutral"
-          variant="ghost"
-        />
       </template>
     </UFooter>
   </UApp>
