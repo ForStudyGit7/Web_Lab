@@ -1,6 +1,6 @@
 <script setup>
 useHead({
-  // Цей шаблон автоматично додаватиме назву сторінки до вкладки браузера
+
   titleTemplate: (titleChunk) => {
     return titleChunk ? `${titleChunk}` : 'Список продуктів'
   },
