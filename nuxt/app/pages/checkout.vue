@@ -1,29 +1,33 @@
 <script setup lang="ts">
-const route = useRoute()
+// 1. Отримуємо доступ до Pinia Store
+const subscriptionStore = useSubscriptionStore()
 
+// 2. Використовуємо дані зі стору
+const isAnnual = computed(() => subscriptionStore.isAnnual)
+const selectedPlan = computed(() => subscriptionStore.selectedPlan)
 
-const { data: plans } = await useFetch<any[]>('/api/plans')
-
-
-const isAnnual = computed(() => route.query.annual === 'true')
-const planId = computed(() => Number(route.query.id) || 1)
-
+// 3. Динамічний розрахунок даних для відображення
 const checkoutData = computed(() => {
-  const plan = plans.value?.find(p => p.id === planId.value) || plans.value?.[0]
-  if (!plan) return null
+  if (!selectedPlan.value) return null
 
-
-  const currentPrice = isAnnual.value ? plan.price : plan.price * 1.25
-  const totalAmount = isAnnual.value ? plan.oldPrice : currentPrice
+  const currentPrice = isAnnual.value ? selectedPlan.value.price : selectedPlan.value.price * 1.25
+  const totalAmount = isAnnual.value ? selectedPlan.value.oldPrice : currentPrice
   const planTypeLabel = isAnnual.value ? 'Annual Plan' : 'Monthly Plan'
   const nameSuffix = isAnnual.value ? 'Annual' : 'Monthly'
 
   return {
-    ...plan,
+    ...selectedPlan.value,
     finalPrice: currentPrice.toFixed(2),
     finalTotal: totalAmount.toFixed(2),
-    finalName: `${plan.name.split(' - ')[0]} - ${nameSuffix}`,
+    finalName: `${selectedPlan.value.name.split(' - ')[0]} - ${nameSuffix}`,
     typeLabel: planTypeLabel
+  }
+})
+
+// Захист сторінки: якщо плану немає (наприклад, оновили сторінку), йдемо на головну
+onMounted(() => {
+  if (!selectedPlan.value) {
+    navigateTo('/')
   }
 })
 
@@ -32,7 +36,7 @@ useHead({
   script: [{ src: 'https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js' }]
 })
 
-
+// Стан форми
 const form = ref({
   cardNumber: '',
   expiry: '',
@@ -45,7 +49,7 @@ const form = ref({
 const errors = ref<Record<string, string>>({})
 const loading = ref(false)
 
-
+// Валідація
 const validateNumbers = (e: Event) => {
   const input = e.target as HTMLInputElement
   input.value = input.value.replace(/\D/g, '')
@@ -69,10 +73,8 @@ const formatCVC = (e: Event) => {
   form.value.cvc = (e.target as HTMLInputElement).value.substring(0, 3)
 }
 
-
 const handleCheckout = async () => {
   errors.value = {}
-
   if (form.value.cardNumber.replace(/\s/g, '').length < 16) errors.value.cardNumber = 'Error'
   if (form.value.expiry.length < 7) errors.value.expiry = 'Error'
   if (form.value.cvc.length < 3) errors.value.cvc = 'Error'
@@ -105,7 +107,7 @@ const handleCheckout = async () => {
       </defs>
     </svg>
 
-    <div class="max-w-[1000px] mx-auto">
+    <div v-if="checkoutData" class="max-w-[1000px] mx-auto">
       <div class="mb-6 px-4">
         <NuxtLink to="/" class="text-[13px] text-gray-400 hover:text-gray-600 transition tracking-tight"><< back</NuxtLink>
       </div>
@@ -116,29 +118,21 @@ const handleCheckout = async () => {
       </div>
 
       <div class="flex flex-col md:flex-row gap-8 justify-center items-start">
-
-        <div v-if="checkoutData" class="w-full max-w-[340px] border border-gray-100 rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] relative shrink-0">
+        <div class="w-full max-w-[340px] border border-gray-100 rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.03)] relative shrink-0">
           <div class="absolute top-0 left-0 right-0 h-1.5 rounded-t-xl" style="background: linear-gradient(to right, #4ade80, #22d3ee);"></div>
-
           <h3 class="text-[18px] font-bold text-gray-700 mb-4">{{ checkoutData.finalName }}</h3>
-
           <div class="bg-gray-100 text-[10px] font-bold text-gray-500 px-2.5 py-1 rounded uppercase mb-4 inline-block italic">3-days free then:</div>
-
           <div class="flex items-baseline gap-1 mb-1">
             <span class="text-[42px] font-bold text-gray-900 tracking-tighter leading-none">${{ checkoutData.finalPrice }}</span>
             <span class="text-gray-500 text-[14px]">/month</span>
           </div>
-
           <div class="text-[12px] text-gray-500 mb-4 italic">
             billed {{ isAnnual ? 'yearly' : 'monthly' }} at
             <span class="font-bold text-gray-600">${{ checkoutData.finalTotal }}</span>
           </div>
-
           <div v-if="isAnnual" class="bg-green-50 text-green-600 text-[11px] font-bold px-3 py-1.5 rounded-lg border border-green-100 inline-block mb-8">
             ${{ checkoutData.savings }} in savings
           </div>
-          <div v-else class="mb-8 h-[34px]"></div>
-
           <ul class="space-y-4 pt-6 border-t border-gray-50">
             <li v-for="feat in checkoutData.features" :key="feat.text" class="flex items-start">
               <svg class="w-4 h-4 mt-0.5 mr-3 shrink-0" viewBox="0 0 24 24"><path fill="url(#starGradient)" d="M12 1L9 9l-8 3l8 3l3 8l3-8l8-3l-8-3z"/></svg>
@@ -151,13 +145,12 @@ const handleCheckout = async () => {
           <h2 class="text-[18px] font-bold text-gray-800 mb-8">Order Summary</h2>
           <div class="space-y-4 mb-8 text-[13px]">
             <div class="flex justify-between text-gray-400">
-              <span>{{ checkoutData?.typeLabel }}</span>
-              <span class="font-bold text-gray-700">${{ checkoutData?.finalTotal }}</span>
+              <span>{{ checkoutData.typeLabel }}</span>
+              <span class="font-bold text-gray-700">${{ checkoutData.finalTotal }}</span>
             </div>
-
             <div class="flex justify-between items-start text-gray-400">
-              <span class="text-[11px]">Total Due <span class="italic opacity-60">(*not including sales tax where applicable)</span></span>
-              <span class="font-bold text-gray-700">${{ checkoutData?.finalTotal }}</span>
+              <span class="text-[11px]">Total Due <span class="italic opacity-60">(*not including sales tax)</span></span>
+              <span class="font-bold text-gray-700">${{ checkoutData.finalTotal }}</span>
             </div>
             <div class="flex justify-between border-t border-gray-200 pt-4 font-bold text-gray-800 text-[16px]"><span>Due Today</span><span>$0.00</span></div>
           </div>
@@ -165,11 +158,10 @@ const handleCheckout = async () => {
           <div class="bg-gray-50/80 p-3 rounded text-center text-[13px] text-gray-400 mb-10 italic">Includes 3-Day Free Trial</div>
 
           <div class="bg-gray-50/50 border border-gray-100 rounded-xl p-6 space-y-6">
-            <h3 class="text-[14px] font-bold text-gray-700 flex items-center gap-1.5 uppercase tracking-wide">Billing Information <iconify-icon icon="ph:info" class="text-gray-300"></iconify-icon></h3>
-
+            <h3 class="text-[14px] font-bold text-gray-700 uppercase tracking-wide">Billing Information</h3>
             <div class="space-y-2 text-left">
               <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-0.5">Card Details</p>
-              <div :class="['border flex items-center bg-white rounded-lg shadow-sm overflow-hidden transition-colors', errors.cardNumber || errors.expiry || errors.cvc ? 'border-red-400' : 'border-gray-200']">
+              <div :class="['border flex items-center bg-white rounded-lg shadow-sm overflow-hidden', errors.cardNumber || errors.expiry || errors.cvc ? 'border-red-400' : 'border-gray-200']">
                 <div class="px-4 text-gray-300"><iconify-icon icon="ph:credit-card" class="text-lg"></iconify-icon></div>
                 <input :value="form.cardNumber" @input="formatCardNumber" placeholder="Number" class="w-full py-3 outline-none text-[13px] text-gray-600" />
                 <div class="h-6 w-px bg-gray-200 mx-2"></div>
@@ -182,30 +174,23 @@ const handleCheckout = async () => {
             <div class="space-y-2 pt-2 text-left">
               <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-0.5">Address</p>
               <div class="border border-gray-100 bg-white rounded-lg p-4 space-y-4 shadow-sm">
-                <div class="space-y-1">
-                  <label class="text-[11px] text-gray-400 font-medium">Full name</label>
-                  <input v-model="form.fullName" :class="['w-full border rounded-md p-2.5 outline-none text-[13px] transition-all', errors.fullName ? 'border-red-400' : 'border-gray-100 focus:border-emerald-400']" />
-                </div>
-                <div class="space-y-1">
-                  <label class="text-[11px] text-gray-400 font-medium">Address</label>
-                  <input v-model="form.address" placeholder="Address" :class="['w-full border rounded-md p-2.5 outline-none text-[13px] transition-all', errors.address ? 'border-red-400' : 'border-gray-100 focus:border-emerald-400']" />
-                </div>
+                <input v-model="form.fullName" placeholder="Full name" :class="['w-full border rounded-md p-2.5 outline-none text-[13px]', errors.fullName ? 'border-red-400' : 'border-gray-100']" />
+                <input v-model="form.address" placeholder="Address" :class="['w-full border rounded-md p-2.5 outline-none text-[13px]', errors.address ? 'border-red-400' : 'border-gray-100']" />
               </div>
             </div>
           </div>
 
           <div class="mt-8">
             <div class="flex items-start gap-3">
-              <input type="checkbox" v-model="form.consent" :class="['mt-1 shrink-0 w-4 h-4 accent-emerald-500', errors.consent ? 'outline outline-2 outline-red-400 rounded-sm' : '']" />
-              <p class="text-[10px] text-gray-400 leading-relaxed text-left">
-                I consent to <a href="#" class="text-gray-600 underline font-medium">Terms of Use</a> and understand my 3-day free trial will automatically convert to ${{ checkoutData?.finalTotal }} per year starting on 04/02/2026. The yearly fee will be automatically charged each year going forward unless I cancel my account at least one (1) business day before the end of the current billing period, which can be done by calling (888) 463-3163.
+              <input type="checkbox" v-model="form.consent" :class="['mt-1 w-4 h-4', errors.consent ? 'outline-red-400' : '']" />
+              <p class="text-[10px] text-gray-400 text-left">
+                I consent to <a href="#" class="underline">Terms of Use</a>... starting on 04/02/2026 for the amount of ${{ checkoutData.finalTotal }}.
               </p>
             </div>
-            <p v-if="Object.keys(errors).length > 0" class="text-red-500 text-[10px] mt-4 font-bold uppercase tracking-widest text-center">Please fill all fields correctly</p>
           </div>
 
           <div class="mt-6 text-left">
-            <button @click="handleCheckout" :disabled="loading" class="bg-[#e5e7eb] hover:bg-gray-300 text-gray-600 font-medium py-2.5 px-10 rounded text-[13px] transition-all active:scale-95 shadow-sm">
+            <button @click="handleCheckout" :disabled="loading" class="bg-[#e5e7eb] text-gray-600 font-medium py-2.5 px-10 rounded text-[13px] shadow-sm active:scale-95 transition-all">
               {{ loading ? 'Wait...' : 'Try It Free' }}
             </button>
           </div>

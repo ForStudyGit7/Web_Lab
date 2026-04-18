@@ -1,10 +1,20 @@
 <script setup lang="ts">
 const { data: plans } = await useFetch<any[]>('/api/plans')
-
 const isAnnual = ref(true)
+
+// Підключаємо стор та роутер
+const subscriptionStore = useSubscriptionStore()
+const router = useRouter()
 
 const getDisplayPrice = (basePrice: number) => {
   return isAnnual.value ? basePrice.toFixed(2) : (basePrice * 1.25).toFixed(2)
+}
+
+const selectPlan = (plan: any) => {
+  // Зберігаємо вибір у Pinia
+  subscriptionStore.setSubscription(plan, isAnnual.value)
+  // Переходимо на сторінку чекауту
+  router.push('/checkout')
 }
 
 const highlightText = (text: string) => {
@@ -80,12 +90,12 @@ const highlightText = (text: string) => {
           </span>
         </div>
 
-        <NuxtLink
-          :to="`/checkout?id=${plan.id}&annual=${isAnnual}`"
+        <button
+          @click="selectPlan(plan)"
           class="w-full mt-8 bg-[#ffb020] hover:bg-[#ff9f00] text-white font-bold py-4 rounded-xl shadow-lg transition-all uppercase text-xs tracking-widest text-center"
         >
           Try It Free
-        </NuxtLink>
+        </button>
 
         <hr class="my-8 border-gray-50">
 

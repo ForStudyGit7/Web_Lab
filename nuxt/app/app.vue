@@ -1,6 +1,8 @@
 <script setup>
-useHead({
+// 1. Підключаємо стор
+const subscriptionStore = useSubscriptionStore()
 
+useHead({
   titleTemplate: (titleChunk) => {
     return titleChunk ? `${titleChunk}` : 'Список продуктів'
   },
@@ -22,18 +24,32 @@ useHead({
         <div class="hidden lg:flex items-center gap-4 ml-8">
           <UButton to="/" variant="ghost" color="neutral">Список продуктів</UButton>
           <UButton to="/products" variant="ghost" color="neutral">Таблиця</UButton>
+          <UButton to="/store" variant="ghost" color="primary" icon="i-ph-user-circle-bold">Профіль (Pinia)</UButton>
+
+          <div v-if="subscriptionStore.selectedPlan"
+               class="flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded-full ml-2">
+            <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+            <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">
+              Active: {{ subscriptionStore.selectedPlan.name.split(' ')[0] }}
+              ({{ subscriptionStore.isAnnual ? 'Annual' : 'Monthly' }})
+            </span>
+          </div>
         </div>
       </template>
 
       <template #right>
-        <UColorModeButton />
-        <UButton
-          to="https://github.com/"
-          target="_blank"
-          icon="i-simple-icons-github"
-          color="neutral"
-          variant="ghost"
-        />
+        <div class="flex items-center gap-2">
+          <TemplateMenu />
+
+          <UColorModeButton />
+          <UButton
+            to="https://github.com/"
+            target="_blank"
+            icon="i-simple-icons-github"
+            color="neutral"
+            variant="ghost"
+          />
+        </div>
       </template>
     </UHeader>
 
