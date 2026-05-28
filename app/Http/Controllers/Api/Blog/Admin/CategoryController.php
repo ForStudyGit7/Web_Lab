@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Api\Blog\Admin;
 
 
-use Illuminate\Http\Request;
 use App\Models\BlogCategory;
 use Illuminate\Support\Str;
+use App\Http\Requests\BlogCategoryUpdateRequest;
+use App\Http\Requests\BlogCategoryCreateRequest;
 
 class CategoryController extends BaseController
 {
@@ -16,32 +17,38 @@ class CategoryController extends BaseController
         return $paginator;
     }
 
-    public function store(Request $request)
+    public function store(BlogCategoryCreateRequest $request)
     {
-        $data = $request->all();
+        $data = $request->input(); // отримаємо масив даних, які надійшли з форми
 
-        if (empty($data['slug'])) {
-            $data['slug'] = Str::slug($data['title']);
+        if (empty($data['slug'])) { // якщо псевдонім порожній
+            $data['slug'] = Str::slug($data['title']); // генеруємо псевдонім
         }
 
-
-        $item = BlogCategory::create($data);
+        // Створюємо об'єкт і додаємо в БД
+        $item = (new BlogCategory())->create($data);
 
         if ($item) {
-            return ['success' => 'Успішно створено'];
+            // Повертаємо статус успіху разом із самим створеним об'єктом
+            return response()->json([
+                'success' => true,
+                'message' => 'Успішно збережено',
+                'data' => $item
+            ], 201); // 201 Created — стандартний HTTP-статус для успішного створення
         } else {
-            return ['msg' => 'Помилка створення'];
+            return response()->json(['message' => 'Помилка збереження'], 400);
         }
     }
 
-    public function update(Request $request, string $id)
+    public function update(BlogCategoryUpdateRequest $request, $id)
     {
         $item = BlogCategory::find($id);
 
         if (empty($item)) {
-            return back()
-                ->withErrors(['msg' => "Запис id=[{$id}] не знайдено"])
-                ->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => "Запис id=[{$id}] не знайдено"
+            ], 404);
         }
 
         $data = $request->all();
@@ -53,9 +60,14 @@ class CategoryController extends BaseController
         $result = $item->update($data);
 
         if ($result) {
-            return ['success' => 'Успішно збережено'];
+            // Повертаємо оновлений об'єкт (refresh() підтягне свіжі дані з БД)
+            return response()->json([
+                'success' => true,
+                'message' => 'Успішно збережено',
+                'data' => $item->refresh()
+            ], 200); // 200 OK
         } else {
-            return ['msg' => 'Помилка збереження'];
+            return response()->json(['message' => 'Помилка збереження'], 400);
         }
     }
 }
