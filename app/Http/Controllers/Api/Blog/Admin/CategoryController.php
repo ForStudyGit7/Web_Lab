@@ -2,39 +2,45 @@
 
 namespace App\Http\Controllers\Api\Blog\Admin;
 
-
+use Illuminate\Http\Request;
 use App\Models\BlogCategory;
 use Illuminate\Support\Str;
 use App\Http\Requests\BlogCategoryUpdateRequest;
 use App\Http\Requests\BlogCategoryCreateRequest;
+use App\Repositories\BlogCategoryRepository; // Підключаємо наш репозиторій
 
 class CategoryController extends BaseController
 {
+
+    public function __construct(private BlogCategoryRepository $blogCategoryRepository)
+    {
+        // parent::__construct();
+    }
+
     public function index()
     {
-        $paginator = BlogCategory::paginate(5);
+
+        $paginator = $this->blogCategoryRepository->getAllWithPaginate(5);
 
         return $paginator;
     }
 
     public function store(BlogCategoryCreateRequest $request)
     {
-        $data = $request->input(); // отримаємо масив даних, які надійшли з форми
+        $data = $request->input();
 
-        if (empty($data['slug'])) { // якщо псевдонім порожній
-            $data['slug'] = Str::slug($data['title']); // генеруємо псевдонім
+        if (empty($data['slug'])) {
+            $data['slug'] = Str::slug($data['title']);
         }
 
-        // Створюємо об'єкт і додаємо в БД
         $item = (new BlogCategory())->create($data);
 
         if ($item) {
-            // Повертаємо статус успіху разом із самим створеним об'єктом
             return response()->json([
                 'success' => true,
                 'message' => 'Успішно збережено',
                 'data' => $item
-            ], 201); // 201 Created — стандартний HTTP-статус для успішного створення
+            ], 201);
         } else {
             return response()->json(['message' => 'Помилка збереження'], 400);
         }
@@ -42,7 +48,8 @@ class CategoryController extends BaseController
 
     public function update(BlogCategoryUpdateRequest $request, $id)
     {
-        $item = BlogCategory::find($id);
+
+        $item = $this->blogCategoryRepository->getEdit($id);
 
         if (empty($item)) {
             return response()->json([
@@ -60,12 +67,11 @@ class CategoryController extends BaseController
         $result = $item->update($data);
 
         if ($result) {
-            // Повертаємо оновлений об'єкт (refresh() підтягне свіжі дані з БД)
             return response()->json([
                 'success' => true,
                 'message' => 'Успішно збережено',
                 'data' => $item->refresh()
-            ], 200); // 200 OK
+            ], 200);
         } else {
             return response()->json(['message' => 'Помилка збереження'], 400);
         }

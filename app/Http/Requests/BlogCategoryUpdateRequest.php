@@ -8,7 +8,7 @@ class BlogCategoryUpdateRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // Рядок 16: змінюємо false на true
+        return true;
     }
 
     public function rules(): array

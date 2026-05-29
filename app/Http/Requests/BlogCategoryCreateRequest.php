@@ -8,7 +8,7 @@ class BlogCategoryCreateRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // Дозволяємо запит
+        return true;
     }
 
     public function rules(): array
