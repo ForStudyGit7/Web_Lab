@@ -6,7 +6,6 @@ use App\Http\Controllers\Api\Blog\Admin\BaseController;
 use App\Repositories\BlogPostRepository;
 use App\Repositories\BlogCategoryRepository; // Додано
 use App\Http\Requests\BlogPostUpdateRequest; // Додано
-use Carbon\Carbon; // Додано для роботи з датами
 use Illuminate\Support\Str; // Додано для генерації slug
 
 class PostController extends BaseController
@@ -45,14 +44,6 @@ class PostController extends BaseController
 
         $data = $request->all();
 
-        if (empty($data['slug'])) {
-            $data['slug'] = Str::slug($data['title']);
-        }
-
-
-        if (empty($item->published_at) && !empty($data['is_published'])) {
-            $data['published_at'] = Carbon::now();
-        }
 
         $result = $item->update($data);
 

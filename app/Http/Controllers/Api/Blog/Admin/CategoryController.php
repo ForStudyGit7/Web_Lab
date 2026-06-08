@@ -7,7 +7,7 @@ use App\Models\BlogCategory;
 use Illuminate\Support\Str;
 use App\Http\Requests\BlogCategoryUpdateRequest;
 use App\Http\Requests\BlogCategoryCreateRequest;
-use App\Repositories\BlogCategoryRepository; // Підключаємо наш репозиторій
+use App\Repositories\BlogCategoryRepository;
 
 class CategoryController extends BaseController
 {
@@ -29,9 +29,7 @@ class CategoryController extends BaseController
     {
         $data = $request->input();
 
-        if (empty($data['slug'])) {
-            $data['slug'] = Str::slug($data['title']);
-        }
+
 
         $item = (new BlogCategory())->create($data);
 
@@ -48,7 +46,6 @@ class CategoryController extends BaseController
 
     public function update(BlogCategoryUpdateRequest $request, $id)
     {
-
         $item = $this->blogCategoryRepository->getEdit($id);
 
         if (empty($item)) {
@@ -60,9 +57,7 @@ class CategoryController extends BaseController
 
         $data = $request->all();
 
-        if (empty($data['slug'])) {
-            $data['slug'] = Str::slug($data['title']);
-        }
+
 
         $result = $item->update($data);
 
