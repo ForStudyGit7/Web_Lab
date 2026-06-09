@@ -50,6 +50,11 @@ class BlogCategoryRepository extends CoreRepository
      * * @param int|null $perPage
      * * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
+    /**
+     * Отримати категорію для виводу пагінатором
+     * * @param int|null $perPage
+     * * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
     public function getAllWithPaginate($perPage = null)
     {
         $columns = ['id', 'title', 'parent_id'];
@@ -57,6 +62,9 @@ class BlogCategoryRepository extends CoreRepository
         $result = $this
             ->startConditions()
             ->select($columns)
+            ->with([
+                'parentCategory:id,title',
+            ])
             ->paginate($perPage);
 
         return $result;
