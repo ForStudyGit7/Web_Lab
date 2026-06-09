@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\Blog\Admin;
 
 use App\Models\BlogPost;
+use App\Jobs\BlogPostAfterCreateJob;
+use App\Jobs\BlogPostAfterDeleteJob;
 use App\Http\Controllers\Api\Blog\Admin\BaseController;
 use App\Repositories\BlogPostRepository;
 use App\Repositories\BlogCategoryRepository;
@@ -39,11 +41,15 @@ class PostController extends BaseController
         $item = (new BlogPost())->create($data);
 
         if ($item) {
+            // Відправляємо завдання в чергу
+            $job = new BlogPostAfterCreateJob($item);
+            dispatch($job);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Успішно збережено',
                 'data' => $item
-            ], 201); // 201 Created — статус успішного створення в API
+            ], 201);
         } else {
             return response()->json([
                 'success' => false,
@@ -89,20 +95,21 @@ class PostController extends BaseController
      */
     public function destroy($id)
     {
-        $result = BlogPost::destroy($id); // софт деліт, запис лишається в БД, але заповнюється deleted_at
-
-        // $result = BlogPost::find($id)->forceDelete(); (повне видалення з БД):
+        $result = BlogPost::destroy($id);
 
         if ($result) {
+
+            BlogPostAfterDeleteJob::dispatch($id)->delay(20);
+
             return response()->json([
                 'success' => true,
                 'message' => "Запис id=[{$id}] успішно видалено"
-            ], 200); // 200 OK
+            ], 200);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Помилка видалення або запис не знайдено'
-            ], 400); // 400 Bad Request
+                'message' => 'Помилка видалення або запис не існує'
+            ], 400);
         }
     }
 }
