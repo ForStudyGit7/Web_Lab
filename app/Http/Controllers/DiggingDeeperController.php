@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ProcessVideoJob;
+use App\Jobs\GenerateCatalog\GenerateCatalogMainJob;
 use App\Models\BlogPost;
 use Carbon\Carbon;
 
@@ -119,6 +121,34 @@ class DiggingDeeperController extends Controller
         $sortedAscCollection = $collection->sortBy('created_at');
         $sortedDescCollection = $collection->sortByDesc('item_id');
 
-         dd(compact('sortedSimpleCollection', 'sortedAscCollection', 'sortedDescCollection'));
+        dd(compact('sortedSimpleCollection', 'sortedAscCollection', 'sortedDescCollection'));
+    }
+
+    /**
+     * Крок 3. Метод для запуску обробки відео
+     * @url http://localhost/api/digging_deeper/process-video
+     */
+    public function processVideo()
+    {
+        ProcessVideoJob::dispatch();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Завдання ProcessVideoJob успішно відправлено в чергу.'
+        ], 200);
+    }
+
+    /**
+     * Крок 3. Метод для підготовки та запуску ланцюга каталогу
+     * @url http://localhost/api/digging_deeper/prepare-catalog
+     */
+    public function prepareCatalog()
+    {
+        GenerateCatalogMainJob::dispatch();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ланцюг формування каталогу (GenerateCatalogMainJob) успішно запущено.'
+        ], 200);
     }
 }

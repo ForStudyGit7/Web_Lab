@@ -2,12 +2,15 @@
 
 namespace App\Jobs;
 
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
 class ProcessVideoJob implements ShouldQueue
 {
-    use Queueable;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
      * Create a new job instance.
@@ -22,6 +25,6 @@ class ProcessVideoJob implements ShouldQueue
      */
     public function handle(): void
     {
-        //
+        logs()->info("Обробка відео успішно виконана [ProcessVideoJob]");
     }
 }
