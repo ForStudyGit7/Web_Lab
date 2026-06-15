@@ -10,7 +10,7 @@ use App\Repositories\BlogPostRepository;
 use App\Repositories\BlogCategoryRepository;
 use App\Http\Requests\BlogPostUpdateRequest;
 use App\Http\Requests\BlogPostCreateRequest;
-use Illuminate\Support\Str; // Додано для генерації slug
+use Illuminate\Support\Str;
 
 class PostController extends BaseController
 {
@@ -32,6 +32,25 @@ class PostController extends BaseController
     }
 
     /**
+     * Display the specified resource.
+     * ФІКС: Додано метод show для лаби 16
+     */
+    public function show($id)
+    {
+
+        $item = BlogPost::with(['user', 'category'])->find($id);
+
+        if (empty($item)) {
+            return response()->json([
+                'success' => false,
+                'message' => "Запис id=[{$id}] не знайдено"
+            ], 404);
+        }
+
+        return response()->json($item);
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(BlogPostCreateRequest $request)
@@ -41,7 +60,7 @@ class PostController extends BaseController
         $item = (new BlogPost())->create($data);
 
         if ($item) {
-            // Відправляємо завдання в чергу
+
             $job = new BlogPostAfterCreateJob($item);
             dispatch($job);
 
