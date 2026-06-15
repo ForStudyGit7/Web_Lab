@@ -2,7 +2,7 @@
 const { data: plans } = await useFetch<any[]>('/api/plans')
 const isAnnual = ref(true)
 
-// Підключаємо стор та роутер
+
 const subscriptionStore = useSubscriptionStore()
 const router = useRouter()
 
@@ -11,9 +11,9 @@ const getDisplayPrice = (basePrice: number) => {
 }
 
 const selectPlan = (plan: any) => {
-  // Зберігаємо вибір у Pinia
+
   subscriptionStore.setSubscription(plan, isAnnual.value)
-  // Переходимо на сторінку чекауту
+
   router.push('/checkout')
 }
 

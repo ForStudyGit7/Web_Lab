@@ -1,10 +1,10 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 
-// Отримуємо екземпляр стору
+
 const userStore = useUserStore()
 
-// Деструктуризація зі збереженням реактивності (як у методичці)
+
 const { name, isLoggedIn, welcomeMessage, profileData, isLoading } = storeToRefs(userStore)
 
 const inputName = ref('')

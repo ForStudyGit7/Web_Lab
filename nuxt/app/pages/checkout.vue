@@ -1,12 +1,12 @@
 <script setup lang="ts">
-// 1. Отримуємо доступ до Pinia Store
+
 const subscriptionStore = useSubscriptionStore()
 
-// 2. Використовуємо дані зі стору
+
 const isAnnual = computed(() => subscriptionStore.isAnnual)
 const selectedPlan = computed(() => subscriptionStore.selectedPlan)
 
-// 3. Динамічний розрахунок даних для відображення
+
 const checkoutData = computed(() => {
   if (!selectedPlan.value) return null
 
@@ -24,7 +24,7 @@ const checkoutData = computed(() => {
   }
 })
 
-// Захист сторінки: якщо плану немає (наприклад, оновили сторінку), йдемо на головну
+
 onMounted(() => {
   if (!selectedPlan.value) {
     navigateTo('/')
@@ -36,7 +36,7 @@ useHead({
   script: [{ src: 'https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js' }]
 })
 
-// Стан форми
+
 const form = ref({
   cardNumber: '',
   expiry: '',
@@ -49,7 +49,7 @@ const form = ref({
 const errors = ref<Record<string, string>>({})
 const loading = ref(false)
 
-// Валідація
+
 const validateNumbers = (e: Event) => {
   const input = e.target as HTMLInputElement
   input.value = input.value.replace(/\D/g, '')
