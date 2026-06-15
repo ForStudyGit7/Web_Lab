@@ -11,6 +11,6 @@ abstract class BaseController extends GuestBaseController
      */
     public function __construct()
     {
-        // Ініціалізація загальних елементів адмінки
+        // Ініціалізація загальних елементів адмінкич
     }
 }

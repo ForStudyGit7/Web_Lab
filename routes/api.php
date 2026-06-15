@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Blog\PostController;
 use App\Http\Controllers\Api\Blog\Admin\CategoryController;
 use App\Http\Controllers\Api\Blog\Admin\PostController as AdminPostController;
 use App\Http\Controllers\DiggingDeeperController;
+
 Route::prefix('blog')->group(function () {
     Route::apiResource('posts', PostController::class)->names('blog.posts');
 });
@@ -12,13 +13,11 @@ Route::prefix('blog')->group(function () {
 Route::prefix('admin/blog')->group(function () {
 
     Route::apiResource('categories', CategoryController::class)
-        ->only(['index', 'store', 'update'])
+        ->only(['index', 'store', 'update', 'show', 'destroy'])
         ->names('blog.admin.categories');
-
 
     Route::apiResource('posts', AdminPostController::class)
         ->names('blog.admin.posts');
-
 });
 
 Route::prefix('digging_deeper')->group(function () {

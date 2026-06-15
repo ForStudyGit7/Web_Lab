@@ -47,7 +47,7 @@ class PostController extends BaseController
             ], 404);
         }
 
-        // ОБГОРТАЄМО ОДИН ПОСТ В РЕСУРС
+
         return new PostResource($item);
     }
 

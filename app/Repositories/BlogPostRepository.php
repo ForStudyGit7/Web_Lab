@@ -40,7 +40,7 @@ class BlogPostRepository extends CoreRepository
                 },
                 'user:id,name',
             ])
-            ->paginate(25);
+            ->paginate(500);
 
         return $result;
     }
