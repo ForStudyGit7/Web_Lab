@@ -1,10 +1,10 @@
 <script setup>
-// 1. Підключаємо стор
 const subscriptionStore = useSubscriptionStore()
+const route = useRoute() // Додали для перевірки активної вкладки
 
 useHead({
   titleTemplate: (titleChunk) => {
-    return titleChunk ? `${titleChunk}` : 'Список продуктів'
+    return titleChunk ? `${titleChunk}` : 'Панель керування'
   },
   script: [
     { src: 'https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js' }
@@ -21,9 +21,27 @@ useHead({
           <AppLogo class="w-auto h-6 shrink-0" />
         </NuxtLink>
 
-        <div class="hidden lg:flex items-center gap-4 ml-8">
+        <div class="hidden lg:flex items-center gap-2 ml-8">
           <UButton to="/" variant="ghost" color="neutral">Список продуктів</UButton>
           <UButton to="/products" variant="ghost" color="neutral">Таблиця</UButton>
+
+          <UButton
+            to="/posts/BlogPostsUi"
+            variant="ghost"
+            color="neutral"
+            :class="route.path.startsWith('/posts') ? 'text-primary-500' : ''"
+          >
+            Блог
+          </UButton>
+          <UButton
+            to="/categories/BlogCategories"
+            variant="ghost"
+            color="neutral"
+            :class="route.path === '/categories' ? 'text-primary-500' : ''"
+          >
+            Категорії
+          </UButton>
+
           <UButton to="/store" variant="ghost" color="primary" icon="i-ph-user-circle-bold">Профіль (Pinia)</UButton>
 
           <div v-if="subscriptionStore.selectedPlan"
@@ -40,7 +58,6 @@ useHead({
       <template #right>
         <div class="flex items-center gap-2">
           <TemplateMenu />
-
           <UColorModeButton />
           <UButton
             to="https://github.com/"

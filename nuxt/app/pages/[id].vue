@@ -2,7 +2,7 @@
   <section class="max-w-[800px] mx-auto pb-20 pt-10 px-6">
     <div class="mb-6">
       <NuxtLink
-        to="/BlogPostsUi"
+        to="/posts/BlogPostsUi"
         class="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors no-underline"
       >
         <UIcon name="i-heroicons-arrow-left" />
@@ -57,10 +57,10 @@
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-// Витягуємо динамічний id з адреси сторінки
+
 const postId = route.params.id
 
-// Робимо чистий запит до твого Laravel-бекенду
+
 const { data: post, pending, error } = await useFetch<any>(`http://localhost/api/admin/blog/posts/${postId}`, {
   lazy: true,
   server: false

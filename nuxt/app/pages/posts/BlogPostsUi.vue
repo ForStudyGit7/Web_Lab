@@ -22,7 +22,7 @@
         </button>
 
         <UButton
-          to="/admin/posts/create"
+          to="/posts/create"
           icon="i-heroicons-plus"
           color="primary"
           variant="solid"
@@ -65,7 +65,7 @@
 
             <tbody class="text-gray-700 divide-y divide-gray-100">
             <tr v-if="paginatedPosts.length === 0">
-              <td colspan="7" class="p-12 text-center text-gray-400">Статей за такому запитом не знайдено.</td>
+              <td colspan="7" class="p-12 text-center text-gray-400">Статей за таким запитом не знайдено.</td>
             </tr>
 
             <tr v-for="post in paginatedPosts" :key="post.id" class="hover:bg-gray-50 transition-colors cursor-pointer group">
@@ -158,49 +158,27 @@ const toast = useToast()
 
 const searchInput = ref('')
 const page = ref(1)
-
-
 const itemsPerPage = ref(10)
-
 const perPageInput = ref(10)
+
 
 const { data: apiData, pending, status, refresh } = await useFetch<any>('http://localhost/api/admin/blog/posts', {
   query: computed(() => ({
     page: 1,
-    per_page: 25
+    per_page: 500
   })),
   lazy: true,
   server: false
 })
 
-
-const rawPosts = computed<any[]>(() => {
-  const data = apiData.value?.data || []
-  if (data.length === 0) return []
-
-  const simulated: any[] = []
-
-  for (let i = 0; i < 4; i++) {
-    data.forEach((post: any, index: number) => {
-      simulated.push({
-        ...post,
-        id: 100 - (i * data.length + index)
-      })
-    })
-  }
-  return simulated
-})
-
+// ПРАВИЛЬНО: Беремо реальні дані з API без циклів-симуляцій
+const rawPosts = computed<any[]>(() => apiData.value?.data || [])
 
 const filteredPosts = computed(() => {
   const query = searchInput.value.trim().toLowerCase()
   if (!query) return rawPosts.value
-
-  return rawPosts.value.filter((post: any) => {
-    return post.title?.toLowerCase().includes(query)
-  })
+  return rawPosts.value.filter((post: any) => post.title?.toLowerCase().includes(query))
 })
-
 
 const paginatedPosts = computed(() => {
   const start = (page.value - 1) * itemsPerPage.value
@@ -208,28 +186,20 @@ const paginatedPosts = computed(() => {
   return filteredPosts.value.slice(start, end)
 })
 
-
 const totalClientPages = computed(() => {
   return Math.ceil(filteredPosts.value.length / itemsPerPage.value) || 1
 })
 
-
 const applyPerPage = (event: Event) => {
   const target = event.target as HTMLInputElement
   let value = parseInt(target.value)
-
-  if (isNaN(value) || value < 1) {
-    value = 10
-  } else if (value > 100) {
-    value = 100
-  }
-
+  if (isNaN(value) || value < 1) value = 10
+  else if (value > 100) value = 100
   perPageInput.value = value
   itemsPerPage.value = value
   page.value = 1
   target.blur()
 }
-
 
 watch(searchInput, () => {
   page.value = 1
@@ -262,29 +232,21 @@ const dropdownActions = (post: any) => [
     {
       label: 'Редагувати',
       icon: 'i-heroicons-pencil-square',
-      onSelect: () => {
-        router.push(`/admin/posts/edit-${post.id}`)
-      }
+      onSelect: () => router.push(`/posts/edit-${post.id}`)
     },
     {
       label: 'Видалити',
       icon: 'i-heroicons-trash',
       color: 'error' as const,
-      onSelect: () => {
-        deletePost(post.id, post.title)
-      }
+      onSelect: () => deletePost(post.id, post.title)
     }
   ]
 ]
 
 const deletePost = async (id: number, title: string) => {
   if (!confirm(`Ви впевнені, що хочете видалити статтю "${title}"?`)) return
-
   try {
-    await $fetch(`http://localhost/api/admin/blog/posts/${id}`, {
-      method: 'DELETE'
-    } as any)
-
+    await $fetch(`http://localhost/api/admin/blog/posts/${id}`, { method: 'DELETE' })
     toast.add({
       title: 'Успіх!',
       description: `Статтю "${title}" успішно видалено.`,
