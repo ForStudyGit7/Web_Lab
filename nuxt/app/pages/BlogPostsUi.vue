@@ -80,8 +80,8 @@
               <td class="px-3 py-3 font-semibold text-gray-400">
                 #{{ post.id }}
               </td>
-              <td class="px-3 py-3 whitespace-normal break-words max-w-md">
-                <NuxtLink :to="`/admin/posts/${post.id}`" class="text-gray-800 hover:text-gray-900 font-semibold no-underline hover:underline">
+              <td>
+                <NuxtLink :to="`/${post.id}`" class="text-gray-800 hover:text-gray-900 font-semibold no-underline hover:underline">
                   {{ post.title }}
                 </NuxtLink>
               </td>
