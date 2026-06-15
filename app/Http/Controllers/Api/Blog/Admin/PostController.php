@@ -10,6 +10,7 @@ use App\Repositories\BlogPostRepository;
 use App\Repositories\BlogCategoryRepository;
 use App\Http\Requests\BlogPostUpdateRequest;
 use App\Http\Requests\BlogPostCreateRequest;
+use App\Http\Resources\Api\Blog\Admin\PostResource;
 use Illuminate\Support\Str;
 
 class PostController extends BaseController
@@ -28,16 +29,15 @@ class PostController extends BaseController
     {
         $paginator = $this->blogPostRepository->getAllWithPaginate();
 
-        return $paginator;
+
+        return PostResource::collection($paginator);
     }
 
     /**
      * Display the specified resource.
-     * ФІКС: Додано метод show для лаби 16
      */
     public function show($id)
     {
-
         $item = BlogPost::with(['user', 'category'])->find($id);
 
         if (empty($item)) {
@@ -47,7 +47,8 @@ class PostController extends BaseController
             ], 404);
         }
 
-        return response()->json($item);
+        // ОБГОРТАЄМО ОДИН ПОСТ В РЕСУРС
+        return new PostResource($item);
     }
 
     /**
@@ -60,14 +61,13 @@ class PostController extends BaseController
         $item = (new BlogPost())->create($data);
 
         if ($item) {
-
             $job = new BlogPostAfterCreateJob($item);
             dispatch($job);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Успішно збережено',
-                'data' => $item
+                'data' => new PostResource($item)
             ], 201);
         } else {
             return response()->json([
@@ -92,14 +92,13 @@ class PostController extends BaseController
         }
 
         $data = $request->all();
-
         $result = $item->update($data);
 
         if ($result) {
             return response()->json([
                 'success' => true,
                 'message' => 'Успішно збережено',
-                'data' => $item->refresh()
+                'data' => new PostResource($item->refresh())
             ], 200);
         } else {
             return response()->json([
@@ -117,7 +116,6 @@ class PostController extends BaseController
         $result = BlogPost::destroy($id);
 
         if ($result) {
-
             BlogPostAfterDeleteJob::dispatch($id)->delay(20);
 
             return response()->json([
